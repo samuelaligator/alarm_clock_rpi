@@ -1,9 +1,9 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -Isrc
 LDFLAGS = -lgpiodcxx
 
-TARGET = alarm_clock
-SRCS = main.cpp buttons.cpp display.cpp modes.cpp
+TARGET = horloge
+SRCS = src/main.cpp src/buttons.cpp src/display.cpp src/modes.cpp
 
 $(TARGET): $(SRCS)
 	$(CXX) $(CXXFLAGS) $(SRCS) -o $(TARGET) $(LDFLAGS)
