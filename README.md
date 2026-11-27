@@ -39,6 +39,7 @@ C++ alarm clock for Raspberry Pi using `libgpiod` with a 4-digit 7-segment displ
 | Button 1 | GPIO `21` | `INPUT` | Button 1 |
 | Button 2 | GPIO `20` | `INPUT` | Button 2 |
 | Buzzer | GPIO `19` | `OUTPUT` | Buzzer |
+| Power Rail | `3.3V` | - | Breadboard `3.3V` power rail |
 | Common Ground | `GND` | - | Shared ground |
 
 ## Usage
