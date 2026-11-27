@@ -1,4 +1,5 @@
 #include "modes.hpp"
+#include "buzzer.hpp"
 #include <chrono>
 #include <ctime>
 
@@ -17,7 +18,7 @@ bool is_timeout(std::chrono::steady_clock::time_point start_time, int duration_m
     return elapsed_ms >= duration_ms;
 }
 
-void clock(ModeContext& ctx, bool& alarm_enabled) {
+void clock(ModeContext& ctx, std::array<int, 4>& current_time, bool& alarm_enabled) {
     if (ctx.action1 == ButtonEvent::SHORT_PRESS) {
         ctx.current_mode = Mode::VIEW_ALARM;
         return;
@@ -32,17 +33,7 @@ void clock(ModeContext& ctx, bool& alarm_enabled) {
         return;
     }
 
-    std::time_t current_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::tm* local_time = std::localtime(&current_time);
-
-    int hours = local_time->tm_hour;
-    int minutes = local_time->tm_min;
-
-    ctx.display_data.digits[0] = hours / 10;
-    ctx.display_data.digits[1] = hours % 10;
-    ctx.display_data.digits[2] = minutes / 10;
-    ctx.display_data.digits[3] = minutes % 10;
-
+    ctx.display_data.digits = current_time;
     ctx.display_data.dps = {false, true, false, alarm_enabled};
 }
 
@@ -85,12 +76,21 @@ void edit_alarm(ModeContext& ctx, std::array<int, 4>& time, bool& alarm_enabled)
     ctx.display_data.dps = {false, false, false, alarm_enabled};
 }
 
-void view_volume(ModeContext& ctx, int volume) {
+void view_volume(ModeContext& ctx, int volume, gpiod::line_request& request) {
     if (ctx.action1 == ButtonEvent::SHORT_PRESS || ctx.action2 == ButtonEvent::SHORT_PRESS || is_timeout(ctx.last_activity, 4000)) {
         ctx.current_mode = Mode::CLOCK;
+        buzzer_off(request);
         return;
     } else if (ctx.action2 == ButtonEvent::LONG_PRESS) {
         ctx.current_mode = Mode::EDIT_VOLUME;
+        buzzer_off(request);
+        return;
+    }
+
+    if (volume == 1) {
+        buzzer_on(request);
+    } else {
+        buzzer_off(request);
     }
 
     ctx.display_data.digits = {10, 10, 10, volume};
@@ -102,9 +102,9 @@ void edit_volume(ModeContext& ctx, int& volume) {
         ctx.current_mode = Mode::CLOCK;
         return;
     } else if (ctx.action1 == ButtonEvent::SHORT_PRESS || ctx.action1 == ButtonEvent::REPEAT) {
-        volume = (volume - 1 + 10) % 10;
+        volume = (volume - 1 + 2) % 2;
     } else if (ctx.action2 == ButtonEvent::SHORT_PRESS || ctx.action2 == ButtonEvent::REPEAT) {
-        volume = (volume + 1) % 10;
+        volume = (volume + 1) % 2;
     }
 
     if (!is_timeout(ctx.last_activity, 500) || is_blink_on()) {
@@ -113,4 +113,22 @@ void edit_volume(ModeContext& ctx, int& volume) {
         ctx.display_data.digits = {10, 10, 10, 10};
     }
     ctx.display_data.dps = {false, false, false, false};
+}
+
+void alarm_ringing(ModeContext& ctx, std::array<int, 4>& current_time, bool& alarm_enabled, int& volume_value, gpiod::line_request& request) {
+    if (ctx.action1 == ButtonEvent::SHORT_PRESS || ctx.action2 == ButtonEvent::SHORT_PRESS || is_timeout(ctx.last_activity, 180000)) {
+        ctx.current_mode = Mode::CLOCK;
+        buzzer_off(request);
+        return;
+    }
+
+    if (is_blink_on(500)) {
+        ctx.display_data.digits = {current_time[0], current_time[1], current_time[2], current_time[3]};
+        volume_value == 1 ? buzzer_on(request) : buzzer_off(request);
+    } 
+    else {
+        ctx.display_data.digits = {10, 10, 10, 10};
+        buzzer_off(request);
+    }
+    ctx.display_data.dps = {false, true, false, alarm_enabled};
 }

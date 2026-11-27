@@ -38,3 +38,18 @@ struct ModeContext {
     DisplayData& display_data;
     std::chrono::steady_clock::time_point last_activity;
 };
+
+inline std::array<int, 4> get_current_time() {
+    std::time_t current_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::tm* local_time = std::localtime(&current_time);
+
+    int hours = local_time->tm_hour;
+    int minutes = local_time->tm_min;
+
+    return {
+        hours / 10,
+        hours % 10,
+        minutes / 10,
+        minutes % 10
+    };
+}
