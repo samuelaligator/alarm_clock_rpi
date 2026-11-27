@@ -3,10 +3,22 @@
 C++ alarm clock for Raspberry Pi using `libgpiod` with a 4-digit 7-segment display (shift register), two buttons, and a buzzer.
 
 ## Breadboard Setup
+<img width="3024" height="2679" alt="PXL_20261127_164515853~2" src="https://github.com/user-attachments/assets/17ef2c0d-4ce6-4801-bfc2-5c02e6f1bd85" />
 
-<img width="2048" height="1750" alt="IMG-20261127-WA0000" src="https://github.com/user-attachments/assets/e42c54ca-39d4-458a-a9eb-d6f517249caf" />
+## Components
 
-## GPIO Pinout (BCM)
+* 1x Raspberry Pi
+* 1x Breadboard & jumper wires
+* 1x 4-digit 7-segment display
+* 1x 8-bit shift register (74HC595)
+* 2x Push buttons
+* 1x Active Buzzer
+* 1x NPN transistor (2N3904 / PN2222)
+* 8x Resistors (100 Ω, 7-segment current limiting)
+* 2x Resistors (330 Ω, button pull-down)
+* 1x Resistor (1000 Ω, transistor base)[cite: 1, 2, 3]
+
+## GPIO Pinout
 
 ### Shift Register (`QA..QH` -> `A, B, C, D, E, F, G, DP`)
 
@@ -29,6 +41,16 @@ C++ alarm clock for Raspberry Pi using `libgpiod` with a 4-digit 7-segment displ
 | Buzzer | GPIO `19` | `OUTPUT` | Buzzer |
 | Common Ground | `GND` | - | Shared ground |
 
+## Usage
+
+In **clock mode**:
+* **Button 1:**
+  * **Short press:** Toggle the alarm on/off and view the alarm
+  * **Long press:** Edit the alarm
+* **Button 2:**
+  * **Short press:** View the volume setting
+  * **Long press:** Edit the volume setting
+  
 ## Dependencies
 
 ```bash
