@@ -16,7 +16,7 @@ C++ alarm clock for Raspberry Pi using `libgpiod` with a 4-digit 7-segment displ
 * 1x NPN transistor (2N3904 / PN2222)
 * 8x Resistors (100 Ω, 7-segment current limiting)
 * 2x Resistors (330 Ω, button pull-down)
-* 1x Resistor (1000 Ω, transistor base)[cite: 1, 2, 3]
+* 1x Resistor (1000 Ω, transistor base)
 
 ## GPIO Pinout
 
